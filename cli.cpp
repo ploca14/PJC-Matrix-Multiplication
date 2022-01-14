@@ -6,7 +6,7 @@
 #include <random>
 #include "cli.h"
 
-const int MAX = 50;
+const int MAX = 1000;
 
 Matrix generateRandomMatrix(int n, int m);
 
@@ -57,9 +57,10 @@ void user_multiply() {
 
 void random_multipy() {
     int n, m, p;
-    n = get_random_int();
+    n = m = p = 50;
+    /*n = get_random_int();
     m = get_random_int();
-    p = get_random_int();
+    p = get_random_int();*/
 
     Matrix a = generateRandomMatrix(n, m);
     Matrix b = generateRandomMatrix(m, p);

@@ -71,7 +71,8 @@ Matrix Matrix::operator-(const Matrix& rhs) {
     return result;
 }
 
-void Matrix::multiply(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC) {
+// This method ended up being slower and for big matrices ended up with stack overflow.
+/*void Matrix::multiply(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC) {
     static int i = 0, j = 0, k = 0;
 
     if (i >= matrixA.m_rows)
@@ -93,6 +94,18 @@ void Matrix::multiply(const Matrix &matrixA, const Matrix &matrixB, Matrix &matr
     j= 0;
     ++i;
     multiply(matrixA, matrixB, matrixC);
+}*/
+
+void Matrix::multiply(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC) {
+    for (int i = 0; i < matrixA.m_rows; i++) {
+        for (int j = 0; j < matrixB.m_cols; j++) {
+            matrixC(i, j) = 0;
+
+            for (int k = 0; k < matrixB.m_rows; k++) {
+                matrixC(i, j) += matrixA(i, k) * matrixB(k, j);
+            }
+        }
+    }
 }
 
 Matrix Matrix::operator*(const Matrix &rhs) {
