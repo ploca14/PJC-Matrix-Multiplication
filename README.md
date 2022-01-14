@@ -23,4 +23,6 @@ Zde můžeme sledovat dosažené výsledky:
 | 1000x1000 |  85108 |         x |        x |
 | 1024x1024 | 146436 |         x |    65238 |
 
+![](report/graph1.png)
+![](report/graph2.png)
 
