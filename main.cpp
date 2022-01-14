@@ -8,7 +8,12 @@ int main(int argc, char *argv[]) {
         if (cmd == "--help") {
             print_help();
         } else if (cmd == "--random") {
-            random_multipy();
+            if (argc > 2) {
+                long int size = strtol(argv[2], NULL, 10);
+                random_multiply(size);
+            } else {
+                random_multiply(0);
+            }
         }
     } else {
         user_multiply();

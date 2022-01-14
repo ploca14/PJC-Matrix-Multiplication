@@ -16,7 +16,9 @@ Matrix inputMatrix(int rows, int cols);
 
 void user_multiply();
 
-void random_multipy();
+void random_multiply(int size);
+
+void random_multiply();
 
 void print_help();
 

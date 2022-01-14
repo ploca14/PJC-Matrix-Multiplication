@@ -25,6 +25,16 @@ public:
     Matrix operator*(const Matrix&);
 
     friend std::ostream& operator<<(std::ostream&, Matrix&);
+
+    int get_rows() const {
+        return m_rows;
+    }
+
+    int get_cols() const {
+        return m_cols;
+    }
+
+    Matrix split(int i, int i1, int i2, int cols, const Matrix &matrix);
 };
 
 #endif //SEMESTRALKA_MATRIX_H

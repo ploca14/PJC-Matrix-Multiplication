@@ -55,12 +55,15 @@ void user_multiply() {
     std::cout << "Needed " << to_ms(end - start).count() << " ms to finish.\n";
 }
 
-void random_multipy() {
+void random_multiply(int size) {
     int n, m, p;
-    n = m = p = 50;
-    /*n = get_random_int();
-    m = get_random_int();
-    p = get_random_int();*/
+    if (size > 0) {
+        n = m = p = size;
+    } else {
+        n = get_random_int();
+        m = get_random_int();
+        p = get_random_int();
+    }
 
     Matrix a = generateRandomMatrix(n, m);
     Matrix b = generateRandomMatrix(m, p);
@@ -90,9 +93,9 @@ Matrix generateRandomMatrix(int rows, int cols) {
 }
 
 void print_help() {
-    std::cout << "Usage: semestralka [--help] [--random]" << std::endl << std::endl;
+    std::cout << "Usage: semestralka [--help] [--random [<size>]] " << std::endl << std::endl;
     std::cout << "If you want to multiply random matrices:" << std::endl;
-    std::cout << std::setw(30) << std::left << "  semestralka --random " << "The program will generate two random matrices and multiply them" << std::endl << std::endl;
+    std::cout << std::setw(30) << std::left << "  semestralka --random [<size>]" << "The program will generate two random matrices and multiply them" << std::endl << std::endl;
     std::cout << "If you want to input your matrices:" << std::endl;
     std::cout << std::setw(30) << std::left << "  semestralka  " << "The program will ask you to input two matrices and multiply them";
 }

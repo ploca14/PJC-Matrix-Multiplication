@@ -3,7 +3,6 @@
 //
 
 #include "matrix.h"
-#include <cmath>
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
@@ -71,7 +70,9 @@ Matrix Matrix::operator-(const Matrix& rhs) {
     return result;
 }
 
-// This method ended up being slower and for big matrices ended up with stack overflow.
+/* RECURSIVE
+ * This method ended up being slower and for bigger matrices ended up with stack overflow.
+ * */
 /*void Matrix::multiply(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC) {
     static int i = 0, j = 0, k = 0;
 
@@ -96,14 +97,66 @@ Matrix Matrix::operator-(const Matrix& rhs) {
     multiply(matrixA, matrixB, matrixC);
 }*/
 
-void Matrix::multiply(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC) {
-    for (int i = 0; i < matrixA.m_rows; i++) {
-        for (int j = 0; j < matrixB.m_cols; j++) {
+void naive(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC) {
+    for (int i = 0; i < matrixA.get_rows(); i++) {
+        for (int j = 0; j < matrixB.get_cols(); j++) {
             matrixC(i, j) = 0;
 
-            for (int k = 0; k < matrixB.m_rows; k++) {
+            for (int k = 0; k < matrixB.get_rows(); k++) {
                 matrixC(i, j) += matrixA(i, k) * matrixB(k, j);
             }
+        }
+    }
+}
+
+/* NAIVE
+ * This method uses the 3 for loops by definition
+ * */
+/*void Matrix::multiply(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC) {
+    naive(matrixA, matrixB, matrixC);
+}*/
+
+/* Strassen
+ * This method uses the Strassen algorithm
+ * Only works for NxN square matrices, where N is a number to the power of 2
+ * */
+void Matrix::multiply(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC) {
+    if (matrixA.m_rows <= 2) {
+        return naive(matrixA, matrixB, matrixC);
+    }
+
+    int half = matrixA.m_rows / 2;
+
+    Matrix a = split(0, 0, half, half, matrixA);
+    Matrix b = split(0, half, half, half, matrixA);
+    Matrix c = split(half, 0, half, half, matrixA);
+    Matrix d = split(half, half, half, half, matrixA);
+
+    Matrix e = split(0, 0, half, half, matrixB);
+    Matrix f = split(0, half, half, half, matrixB);
+    Matrix g = split(half, 0, half, half, matrixB);
+    Matrix h = split(half, half, half, half, matrixB);
+
+    Matrix ae = a * e;
+    Matrix bg = b * g;
+    Matrix af = a * f;
+    Matrix bh = b * h;
+    Matrix ce = c * e;
+    Matrix dg = d * g;
+    Matrix cf = c * f;
+    Matrix dh = d * h;
+
+    Matrix c11 = ae + bg;
+    Matrix c12 = af + bh;
+    Matrix c21 = ce + dg;
+    Matrix c22 = cf + dh;
+
+    for (int i = 0; i < half; ++i) {
+        for (int j = 0; j < half; ++j) {
+            matrixC(i, j) = c11(i, j);
+            matrixC(i, j + half) = c12(i, j);
+            matrixC(i + half, j) = c21(i, j);
+            matrixC(i + half, j + half) = c22(i, j);
         }
     }
 }
@@ -123,4 +176,17 @@ Matrix::Matrix(int rows, int cols, int *data):
     m_data(new int[rows*cols])
 {
     std::copy(data, data + (rows*cols), m_data.get());
+}
+
+Matrix Matrix::split(int start_row, int start_col, int rows, int cols, const Matrix &matrix) {
+    Matrix result = Matrix(rows, cols);
+
+    int i, ir, j, jr;
+    for (i = start_row, ir = 0; ir < rows; ++i, ++ir) {
+        for (j = start_col, jr = 0; jr < cols; ++j, ++jr) {
+            result(ir, jr) = matrix(i, j);
+        }
+    }
+
+    return result;
 }
