@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/semestralka.dir/main.cpp.o CMakeFiles/semestralka.dir/matrix.cpp.o CMakeFiles/semestralka.dir/cli.cpp.o -o semestralka 
