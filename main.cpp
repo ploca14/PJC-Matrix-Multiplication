@@ -16,9 +16,15 @@ int main(int argc, char *argv[]) {
             }
         }
     } else {
-        user_multiply();
-    }
+        std::cout << "MATRIX MULTIPLICATION" << std::endl << std::endl;
+        char answer = 'N';
+        do {
+            user_multiply();
 
+            std::cout << std::endl << "Do you want to continue with more matrices? (Y/N): ";
+            std::cin >> answer;
+        } while (answer == 'Y' || answer == 'y');
+    }
     return 0;
 }
 

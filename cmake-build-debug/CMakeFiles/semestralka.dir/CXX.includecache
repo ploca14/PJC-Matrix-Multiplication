@@ -6,23 +6,17 @@
 
 #IncludeRegexTransform: 
 
-/home/ploca14/Škola/pjc/semestralka/cli.cpp
-chrono
--
-random
--
-cli.h
-/home/ploca14/Škola/pjc/semestralka/cli.h
-
-/home/ploca14/Škola/pjc/semestralka/cli.h
-iomanip
--
-iostream
--
-limits
--
+/home/ploca14/Škola/pjc/semestralka/matrix.cpp
 matrix.h
 /home/ploca14/Škola/pjc/semestralka/matrix.h
+iostream
+-
+iomanip
+-
+algorithm
+-
+cassert
+-
 
 /home/ploca14/Škola/pjc/semestralka/matrix.h
 memory

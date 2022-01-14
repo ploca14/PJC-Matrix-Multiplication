@@ -9,16 +9,22 @@
 
 class Matrix {
     int m_rows, m_cols;
-    std::unique_ptr<int []> m_data;
+    int m_step;
+    int* m_data;
+    bool is_owner;
 
     int index(int row, int col) const;
     void multiply(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC);
 public:
     Matrix(int rows, int cols);
     Matrix(int rows, int cols, int* data);
+    Matrix(int start_row, int start_col,
+           int rows, int cols, const Matrix &orig);
 
     int& operator() (int row, int col);
     int operator() (int row, int col) const;
+
+    virtual ~Matrix();
 
     Matrix operator+(const Matrix&);
     Matrix operator-(const Matrix&);
@@ -33,8 +39,6 @@ public:
     int get_cols() const {
         return m_cols;
     }
-
-    Matrix split(int i, int i1, int i2, int cols, const Matrix &matrix);
 };
 
 #endif //SEMESTRALKA_MATRIX_H

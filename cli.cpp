@@ -15,14 +15,13 @@ std::chrono::milliseconds to_ms(TimePoint tp) {
     return std::chrono::duration_cast<std::chrono::milliseconds>(tp);
 }
 
-int get_random_int() {
+int get_random_int(int min,int max) {
     static std::mt19937 mt{ std::random_device{}() };
-    static std::uniform_int_distribution<> dist(1, MAX);
+    static std::uniform_int_distribution<> dist(min, max);
     return dist(mt);
 }
 
 void user_multiply() {
-    std::cout << "MATRIX MULTIPLICATION" << std::endl << std::endl;
     std::cout << "First specify the size of the first matrix" << std:: endl;
 
     std::cout << "Number of rows: ";
@@ -31,16 +30,21 @@ void user_multiply() {
     int a_cols = inputInt(false);
 
     std::cout << std::endl;
-    std::cout << "Now enter the values for the first matrix by rows, divided by spaces" << std:: endl;
-    Matrix a = inputMatrix(a_rows, a_cols);
-
-    std::cout << std::endl;
     std::cout << "Now specify the size of the second matrix" << std:: endl;
 
     std::cout << "Number of rows: ";
     int b_rows = inputInt(false);
     std::cout << "Number of columns: ";
     int b_cols = inputInt(false);
+
+    if (a_cols != b_rows) {
+        std::cout << std::endl << "Number of columns in first matrix doesn't match number of rows in second matrix" << std:: endl;
+        return;
+    }
+
+    std::cout << std::endl;
+    std::cout << "Now enter the values for the first matrix by rows, divided by spaces" << std:: endl;
+    Matrix a = inputMatrix(a_rows, a_cols);
 
     std::cout << std::endl;
     std::cout << "Now enter the values for the second matrix by rows, divided by spaces" << std:: endl;
@@ -60,9 +64,9 @@ void random_multiply(int size) {
     if (size > 0) {
         n = m = p = size;
     } else {
-        n = get_random_int();
-        m = get_random_int();
-        p = get_random_int();
+        n = get_random_int(1, MAX);
+        m = get_random_int(1, MAX);
+        p = get_random_int(1, MAX);
     }
 
     Matrix a = generateRandomMatrix(n, m);
@@ -83,7 +87,7 @@ Matrix generateRandomMatrix(int rows, int cols) {
     int* data = new int[rows*cols];
 
     for (int i = 0; i < rows*cols; ++i) {
-        data[i] = get_random_int();
+        data[i] = get_random_int(-10, 10);
     }
 
     Matrix result = Matrix(rows, cols, data);
@@ -114,7 +118,7 @@ int inputInt(bool positive) {
             std::cin >> a;
         }
         if(!std::cin.fail()) {
-            if (a <= 0) {
+            if (positive && a <= 0) {
                 std::cout << "You have to enter a positive number" << std::endl;
                 continue;
             }

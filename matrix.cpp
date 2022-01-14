@@ -10,7 +10,7 @@
 
 int Matrix::index(int row, int col) const {
     assert(row < m_rows && col < m_cols);
-    return m_cols * row + col;
+    return m_step * row + col;
 }
 
 int &Matrix::operator()(int row, int col) {
@@ -24,16 +24,18 @@ int Matrix::operator()(int row, int col) const {
 Matrix::Matrix(int rows, int cols):
         m_rows(rows),
         m_cols(cols),
+        m_step(cols),
+        is_owner(true),
         m_data(new int[rows * cols])
 {
 
-    std::fill_n(m_data.get(), rows*cols, 0);
+    std::fill_n(m_data, rows*cols, 0);
 }
 
 std::ostream &operator<<(std::ostream &ostream, Matrix &rhs) {
     for (int i = 0; i < rhs.m_rows; ++i) {
         for (int j = 0; j < rhs.m_cols; ++j) {
-            ostream << std::setw(3) << rhs(i, j) << ' ';
+            ostream << std::setw(4) << rhs(i, j) << " ";
         }
         ostream << std::endl;
     }
@@ -97,6 +99,9 @@ Matrix Matrix::operator-(const Matrix& rhs) {
     multiply(matrixA, matrixB, matrixC);
 }*/
 
+/* NAIVE
+ * This method uses the 3 for loops by definition
+ * */
 void naive(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC) {
     for (int i = 0; i < matrixA.get_rows(); i++) {
         for (int j = 0; j < matrixB.get_cols(); j++) {
@@ -109,33 +114,26 @@ void naive(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC) {
     }
 }
 
-/* NAIVE
- * This method uses the 3 for loops by definition
- * */
-/*void Matrix::multiply(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC) {
-    naive(matrixA, matrixB, matrixC);
-}*/
-
 /* Strassen
  * This method uses the Strassen algorithm
  * Only works for NxN square matrices, where N is a number to the power of 2
  * */
-void Matrix::multiply(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC) {
-    if (matrixA.m_rows <= 2) {
+void strassen(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC) {
+    if (matrixA.get_rows() <= 2) {
         return naive(matrixA, matrixB, matrixC);
     }
 
-    int half = matrixA.m_rows / 2;
+    int half = matrixA.get_rows() / 2;
 
-    Matrix a = split(0, 0, half, half, matrixA);
-    Matrix b = split(0, half, half, half, matrixA);
-    Matrix c = split(half, 0, half, half, matrixA);
-    Matrix d = split(half, half, half, half, matrixA);
+    Matrix a = Matrix(0, 0, half, half, matrixA);
+    Matrix b = Matrix(0, half, half, half, matrixA);
+    Matrix c = Matrix(half, 0, half, half, matrixA);
+    Matrix d = Matrix(half, half, half, half, matrixA);
 
-    Matrix e = split(0, 0, half, half, matrixB);
-    Matrix f = split(0, half, half, half, matrixB);
-    Matrix g = split(half, 0, half, half, matrixB);
-    Matrix h = split(half, half, half, half, matrixB);
+    Matrix e = Matrix(0, 0, half, half, matrixB);
+    Matrix f = Matrix(0, half, half, half, matrixB);
+    Matrix g = Matrix(half, 0, half, half, matrixB);
+    Matrix h = Matrix(half, half, half, half, matrixB);
 
     Matrix ae = a * e;
     Matrix bg = b * g;
@@ -161,11 +159,19 @@ void Matrix::multiply(const Matrix &matrixA, const Matrix &matrixB, Matrix &matr
     }
 }
 
+bool isPowerOfTwo(int size) {
+    return (size & (size - 1)) == 0;
+}
+
 Matrix Matrix::operator*(const Matrix &rhs) {
     assert(m_cols == rhs.m_rows);
 
     Matrix result = Matrix(m_rows, rhs.m_cols);
-    multiply((*this), rhs, result);
+    if (m_rows == rhs.m_cols && isPowerOfTwo(m_rows)) {
+        strassen((*this), rhs, result);
+    } else {
+        naive((*this), rhs, result);
+    }
 
     return result;
 }
@@ -173,20 +179,25 @@ Matrix Matrix::operator*(const Matrix &rhs) {
 Matrix::Matrix(int rows, int cols, int *data):
     m_rows(rows),
     m_cols(cols),
+    m_step(cols),
+    is_owner(true),
     m_data(new int[rows*cols])
 {
-    std::copy(data, data + (rows*cols), m_data.get());
+    std::copy(data, data + (rows*cols), m_data);
 }
 
-Matrix Matrix::split(int start_row, int start_col, int rows, int cols, const Matrix &matrix) {
-    Matrix result = Matrix(rows, cols);
+Matrix::Matrix(int start_row, int start_col, int rows, int cols, const Matrix &orig):
+    m_rows(rows),
+    m_cols(cols),
+    m_step(orig.m_step),
+    is_owner(false),
+    m_data(orig.m_data + orig.index(start_row, start_col))
+{
+    assert(start_row+rows <= orig.m_rows && start_col+cols <= orig.m_cols);
+}
 
-    int i, ir, j, jr;
-    for (i = start_row, ir = 0; ir < rows; ++i, ++ir) {
-        for (j = start_col, jr = 0; jr < cols; ++j, ++jr) {
-            result(ir, jr) = matrix(i, j);
-        }
+Matrix::~Matrix() {
+    if (is_owner) {
+        delete[] m_data;
     }
-
-    return result;
 }
