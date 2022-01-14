@@ -135,19 +135,18 @@ void strassen(const Matrix &matrixA, const Matrix &matrixB, Matrix &matrixC) {
     Matrix g = Matrix(half, 0, half, half, matrixB);
     Matrix h = Matrix(half, half, half, half, matrixB);
 
-    Matrix ae = a * e;
-    Matrix bg = b * g;
-    Matrix af = a * f;
-    Matrix bh = b * h;
-    Matrix ce = c * e;
-    Matrix dg = d * g;
-    Matrix cf = c * f;
-    Matrix dh = d * h;
+    Matrix p1 = (a+d) * (e+h);
+    Matrix p2 = d * (g-e);
+    Matrix p3 = (a+b) * h;
+    Matrix p4 = (b-d) * (g+h);
+    Matrix p5 = a * (f-h);
+    Matrix p6 = (c+d) * e;
+    Matrix p7 = (a-c) * (e+f);
 
-    Matrix c11 = ae + bg;
-    Matrix c12 = af + bh;
-    Matrix c21 = ce + dg;
-    Matrix c22 = cf + dh;
+    Matrix c11 = p1 + p2 - p3 + p4;
+    Matrix c12 = p5 + p3;
+    Matrix c21 = p6 + p2;
+    Matrix c22 = p5 + p1 - p6 - p7;
 
     for (int i = 0; i < half; ++i) {
         for (int j = 0; j < half; ++j) {

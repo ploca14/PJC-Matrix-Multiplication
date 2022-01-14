@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ploca14/Škola/pjc/semestralka/matrix.cpp
+matrix.h
+/home/ploca14/Škola/pjc/semestralka/matrix.h
+iostream
+-
+iomanip
+-
+algorithm
+-
+cassert
+-
+
+/home/ploca14/Škola/pjc/semestralka/matrix.h
+memory
+-
+
